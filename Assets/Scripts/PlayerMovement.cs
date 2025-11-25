@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public float jumpForce = 300;
     public bool isJump = false;
 
+    public PlayerHealth health;
     public Rigidbody2D rb;
     public SpriteRenderer sprite;
     public Animator anim;
@@ -26,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (health.isDead) return;
 
         anim.SetFloat("verticalVelocity", rb.velocity.y);
         anim.SetBool("isGrounded", groundChecker.isGrounded);
