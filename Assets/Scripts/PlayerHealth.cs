@@ -10,23 +10,19 @@ public class PlayerHealth : MonoBehaviour
 
     public TextMeshProUGUI CurrentHealthText;
     private Animator anim;
-
     public bool isDead = false;
-
-    private PlayerMovement movement; // referencja do PlayerMovement
+    private PlayerMovement movement; 
 
     private void Start()
     {
         anim = GetComponent<Animator>();
         movement = GetComponent<PlayerMovement>();
-
         isDead = false;
         CurrentHealthText.text = health.ToString();
     }
 
     private void Update()
     {
-        // tylko aktualizacja UI
         CurrentHealthText.text = health.ToString();
     }
 
@@ -35,8 +31,6 @@ public class PlayerHealth : MonoBehaviour
         if (isDead) return;
 
         health -= damage;
-
-        // Odpalenie animacji Hurt
         anim.SetTrigger("isHurt");
 
         health = Mathf.Clamp(health, 0, maxHealth);
@@ -60,13 +54,10 @@ public class PlayerHealth : MonoBehaviour
     {
         isDead = true;
 
-        // Animator: ustaw bool tylko raz
         anim.SetBool("isDead", true);
-
-        // Zablokowanie ruchu
         if (movement != null)
         {
-            movement.enabled = false; // blokuje Update i FixedUpdate
+            movement.enabled = false; 
         }
 
         // Zatrzymanie fizyki
@@ -74,7 +65,7 @@ public class PlayerHealth : MonoBehaviour
         if (rb != null)
         {
             rb.velocity = Vector2.zero;
-            rb.isKinematic = true; // opcjonalnie, ¿eby gracz nie spada³
+            
         }
     }
 }
