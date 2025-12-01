@@ -2,19 +2,18 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float moveSpeed = 500f;
+     public float moveSpeed = 500f;
     public float jumpForce = 300f;
 
     [HideInInspector] public float moveInput = 0f;
     [HideInInspector] public bool isJump = false;
 
-    [Header("Components")]
+    //komponenty
     public Rigidbody2D rb;
     public SpriteRenderer sprite;
     public Animator anim;
     public GroundChecker groundChecker;
-    public PlayerHealth health;  // referencja do PlayerHealth
+    public PlayerHealth health;  
 
     private void Start()
     {

@@ -2,32 +2,30 @@
 
 public class Enemy1 : MonoBehaviour
 {
-    [Header("Patrol Points")]
+    //Patrol
     public Transform LeftPoint;
     public Transform RightPoint;
+
     public float speed = 2f; // normalna prędkość patrolu
-
-    [Header("Chase Settings")]
     public float chaseSpeed = 4f; // prędkość podczas podążania za graczem
+     public float detectionRange = 5f; // zasięg wykrycia gracza
 
-    [Header("Detection Settings")]
-    public float detectionRange = 5f; // zasięg wykrycia gracza
-
-    [Header("Attack Settings")]
+    //Komponenty
     public Transform player;
     public PlayerHealth playerHealth;
-    public float attackRange = 2f;
-    public float attackCooldown = 1f;
     public Animator anim;
+    public LayerMask playerLayer;
+    private Transform targetPoint;
 
-    [Header("Damage Settings")]
+    //Atak
     public Transform attackPoint;
     public float attackHitRange = 0.5f;
-    public LayerMask playerLayer;
-
-    private Transform targetPoint;
-    private float startY;
+    public float attackRange = 2f;
+    public float attackCooldown = 1f;
     private float nextAttackTime = 0f;
+
+    private float startY;
+    
 
     void Start()
     {
