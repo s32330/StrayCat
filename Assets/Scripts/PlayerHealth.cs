@@ -13,57 +13,68 @@ public class PlayerHealth : MonoBehaviour
 
     public bool isDead = false;
 
+    private PlayerMovement movement; // referencja do PlayerMovement
+
     private void Start()
     {
         anim = GetComponent<Animator>();
+        movement = GetComponent<PlayerMovement>();
+
         isDead = false;
-        CurrentHealthText.text = $"{health}";
-        
+        CurrentHealthText.text = health.ToString();
     }
+
     private void Update()
     {
-        CurrentHealthText.text = $"{health}";
-        anim.SetBool("isDead", );
-        anim.SetFloat("isHurt");
+        // tylko aktualizacja UI
+        CurrentHealthText.text = health.ToString();
     }
 
-    
-
-    void TakeDamage(float damage)
+    public void TakeDamage(float damage)
     {
-        health = health - damage;
-        if (health > 0)
-            
+        if (isDead) return;
 
+        health -= damage;
 
-        if (health < 0)
+        // Odpalenie animacji Hurt
+        anim.SetTrigger("isHurt");
+
+        health = Mathf.Clamp(health, 0, maxHealth);
+
+        if (health == 0 && !isDead)
         {
-            health = 0;
+            Die();
         }
-        if (health > maxHealth)
-        {
-            health = maxHealth;
-        }
-        if (health == 0)
-        {
-            isDead = true;
-            
-
-        }
-
-
     }
 
-    public void Heal(float heal)
+    public void Heal(float healAmount)
     {
-        health = health + heal;
+        if (isDead) return;
 
+        health += healAmount;
         if (health > maxHealth)
-        {
             health = maxHealth;
-        }
     }
 
+    private void Die()
+    {
+        isDead = true;
 
+        // Animator: ustaw bool tylko raz
+        anim.SetBool("isDead", true);
 
+        // Zablokowanie ruchu
+        if (movement != null)
+        {
+            movement.enabled = false; // blokuje Update i FixedUpdate
+        }
+
+        // Zatrzymanie fizyki
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.isKinematic = true; // opcjonalnie, ¿eby gracz nie spada³
+        }
+    }
 }

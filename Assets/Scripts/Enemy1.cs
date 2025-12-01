@@ -1,70 +1,119 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Enemy1 : MonoBehaviour
 {
     [Header("Patrol Points")]
     public Transform LeftPoint;
     public Transform RightPoint;
-    public float speed = 2f;
+    public float speed = 2f; // normalna prędkość patrolu
+
+    [Header("Chase Settings")]
+    public float chaseSpeed = 4f; // prędkość podczas podążania za graczem
+
+    [Header("Detection Settings")]
+    public float detectionRange = 5f; // zasięg wykrycia gracza
 
     [Header("Attack Settings")]
-    public Transform player;        // gracz
-    public float attackRange = 2f;  // zasieg ataku
+    public Transform player;
+    public PlayerHealth playerHealth;
+    public float attackRange = 2f;
     public float attackCooldown = 1f;
     public Animator anim;
 
-    private Transform targetPoint;   // aktualny cel patrolu
-    private float startY;            // stała wysokość enemy
+    [Header("Damage Settings")]
+    public Transform attackPoint;
+    public float attackHitRange = 0.5f;
+    public LayerMask playerLayer;
+
+    private Transform targetPoint;
+    private float startY;
     private float nextAttackTime = 0f;
 
     void Start()
     {
-        targetPoint = RightPoint;    // zaczynamy patrol w prawo
+        targetPoint = RightPoint;
         startY = transform.position.y;
 
         if (anim == null)
             anim = GetComponent<Animator>();
+
+        // automatyczne przypisanie gracza po tagu
+        if (player == null)
+        {
+            GameObject go = GameObject.FindGameObjectWithTag("Player");
+            if (go != null)
+                player = go.transform;
+        }
+
+        if (playerHealth == null && player != null)
+            playerHealth = player.GetComponent<PlayerHealth>();
     }
 
     void Update()
     {
+        if (player == null) return;
+
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
+        // Gracz martwy → patrol
+        if (playerHealth != null && playerHealth.isDead)
+        {
+            Patrol(speed);
+            return;
+        }
+
+        // Gracz w zasięgu ataku → zatrzymaj się i atakuj
         if (distanceToPlayer <= attackRange)
         {
-            // Gracz w zasięgu → przerywamy patrol i patrzymy na gracza
-            FacePlayer();
+            FaceTarget(player.position);
+            anim.SetFloat("Move", 0f);
             Attack();
         }
+        // Gracz w zasięgu wykrycia → podążaj do niego z przyspieszoną prędkością
+        else if (distanceToPlayer <= detectionRange)
+        {
+            MoveTowardsPlayer();
+            anim.SetFloat("Move", 1f);
+        }
+        // Gracz poza zasięgiem → patrol
         else
         {
-            // normalny patrol
-            Patrol();
+            Patrol(speed);
         }
     }
 
-    void Patrol()
+    void Patrol(float currentSpeed)
     {
-        float newX = Mathf.MoveTowards(transform.position.x, targetPoint.position.x, speed * Time.deltaTime);
+        float newX = Mathf.MoveTowards(transform.position.x, targetPoint.position.x, currentSpeed * Time.deltaTime);
         float direction = newX - transform.position.x;
 
         transform.position = new Vector2(newX, startY);
-
-        // obrót w stronę ruchu po osi X
         FaceDirection(direction);
 
-        // zmiana punktu docelowego po dotarciu
+        // Animacja ruchu zależna od faktycznego ruchu
+        anim.SetFloat("Move", Mathf.Abs(direction) > 0.001f ? 1f : 0f);
+
         if (Mathf.Abs(transform.position.x - targetPoint.position.x) < 0.05f)
         {
             targetPoint = (targetPoint == LeftPoint) ? RightPoint : LeftPoint;
         }
     }
 
-    void FacePlayer()
+    void MoveTowardsPlayer()
     {
-        float direction = player.position.x - transform.position.x;
+        // ograniczenie ruchu do punktów patrolowych
+        float targetX = Mathf.Clamp(player.position.x, LeftPoint.position.x, RightPoint.position.x);
+
+        float newX = Mathf.MoveTowards(transform.position.x, targetX, chaseSpeed * Time.deltaTime);
+        float direction = newX - transform.position.x;
+
+        transform.position = new Vector2(newX, startY);
+        FaceDirection(direction);
+    }
+
+    void FaceTarget(Vector3 targetPos)
+    {
+        float direction = targetPos.x - transform.position.x;
         FaceDirection(direction);
     }
 
@@ -73,17 +122,44 @@ public class Enemy1 : MonoBehaviour
         if (direction == 0) return;
 
         Vector3 scale = transform.localScale;
-        scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction); // zachowuje szerokość, zmienia tylko znak
+        scale.x = Mathf.Abs(scale.x) * Mathf.Sign(direction);
         transform.localScale = scale;
     }
 
     void Attack()
     {
+        if (playerHealth != null && playerHealth.isDead) return;
+
         if (Time.time >= nextAttackTime)
         {
+            anim.ResetTrigger("Attack");
             anim.SetTrigger("Attack");
-            Debug.Log("Enemy attacks!");
             nextAttackTime = Time.time + attackCooldown;
         }
+    }
+
+    public void DealDamage()
+    {
+        if (playerHealth != null && playerHealth.isDead) return;
+
+        Collider2D hit = Physics2D.OverlapCircle(attackPoint.position, attackHitRange, playerLayer);
+        if (hit != null)
+        {
+            PlayerHealth ph = hit.GetComponent<PlayerHealth>();
+            if (ph != null) ph.TakeDamage(40);
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(attackPoint.position, attackHitRange);
+        }
+
+        // Wyświetlenie detectionRange w scenie
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, detectionRange);
     }
 }
