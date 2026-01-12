@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -67,5 +68,22 @@ public class PlayerHealth : MonoBehaviour
             rb.velocity = Vector2.zero;
             
         }
+
+        SceneManager.LoadScene("Lose");
+    }
+
+    public float GetCurrentHealth()
+    {
+        return health;
+    }
+
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
     }
 }

@@ -5,18 +5,14 @@ using UnityEngine;
 public class GroundChecker : MonoBehaviour
 {
     public bool isGrounded;
-    public BoxCollider2D colider;
     public LayerMask groundLayer;
-
-    private void Start()
-    {
-        colider = GetComponent<BoxCollider2D>();
-    }
+    private int groundContacts = 0; // licznik kontaktów
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
+            groundContacts++;
             isGrounded = true;
         }
     }
@@ -25,7 +21,12 @@ public class GroundChecker : MonoBehaviour
     {
         if (((1 << collision.gameObject.layer) & groundLayer) != 0)
         {
-            isGrounded = false;
+            groundContacts--;
+            if (groundContacts <= 0)
+            {
+                groundContacts = 0;
+                isGrounded = false;
+            }
         }
     }
 }

@@ -27,4 +27,14 @@ public class PointsCounter : MonoBehaviour
         points = points + newpoints;
 
     }
+
+    public float GetCurrentPoints()
+    {
+        return points;
+    }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 }
