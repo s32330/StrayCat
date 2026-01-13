@@ -12,7 +12,8 @@ public class PlayerHealth : MonoBehaviour
     public TextMeshProUGUI CurrentHealthText;
     private Animator anim;
     public bool isDead = false;
-    private PlayerMovement movement; 
+    private PlayerMovement movement;
+   
 
     private void Start()
     {
@@ -24,7 +25,11 @@ public class PlayerHealth : MonoBehaviour
 
     private void Update()
     {
-        CurrentHealthText.text = health.ToString();
+        if (!isDead)
+        {
+            CurrentHealthText.text = health.ToString();
+
+        }
     }
 
     public void TakeDamage(float damage)
@@ -66,10 +71,11 @@ public class PlayerHealth : MonoBehaviour
         if (rb != null)
         {
             rb.velocity = Vector2.zero;
-            
+
         }
 
         SceneManager.LoadScene("Lose");
+
     }
 
     public float GetCurrentHealth()
@@ -85,5 +91,5 @@ public class PlayerHealth : MonoBehaviour
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
-    }
+    } 
 }

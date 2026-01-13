@@ -19,9 +19,8 @@ public class PointsCounter : MonoBehaviour
     }
     private void Update()
     {
-        CurrentPointsText.text = $"{points}";
+            CurrentPointsText.text = $"{points}";    
     }
-
     public void GetPoints(float newpoints)
     {
         points = points + newpoints;

@@ -32,7 +32,7 @@ public class GameRating : MonoBehaviour
 
         int points = Mathf.RoundToInt(pointsCounter.GetCurrentPoints());
 
-        // zak³adamy, ¿e health = liczba ¿yæ (1–9)
+        
         int lives = Mathf.RoundToInt(playerHealth.GetCurrentHealth());
 
         string rating = CalculateRating(points, lives);
