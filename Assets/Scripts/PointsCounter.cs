@@ -19,7 +19,10 @@ public class PointsCounter : MonoBehaviour
     }
     private void Update()
     {
-            CurrentPointsText.text = $"{points}";    
+        if(CurrentPointsText != null)
+        { 
+            CurrentPointsText.text = $"{points}"; }
+
     }
     public void GetPoints(float newpoints)
     {

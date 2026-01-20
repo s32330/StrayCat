@@ -25,7 +25,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Update()
     {
-        if (!isDead)
+        if (CurrentHealthText !=null)
         {
             CurrentHealthText.text = health.ToString();
 
