@@ -6,6 +6,7 @@ public class GameRating : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI ratingText;
     public TextMeshProUGUI summaryText;
+    public TextMeshProUGUI descriptionText;
 
     [Header("Progi punktÛw")]
     public int pointsForS = 1000;
@@ -19,44 +20,66 @@ public class GameRating : MonoBehaviour
     [Range(1, 9)] public int livesForB = 4;
     [Range(1, 9)] public int livesForC = 4;
 
-    void Start()
+    [Header("Opisy ocen")]
+    public string descriptionS = "Perfekcyjnie! Wszystko idealnie.";
+    public string descriptionA = "Bardzo dobrze! Kilka ma≥ych b≥ÍdÛw.";
+    public string descriptionB = "Dobrze, ale moøesz lepiej.";
+    public string descriptionC = "årednio, trzeba popracowaÊ.";
+    public string descriptionD = "èle, sprÛbuj ponownie!";
+
+    private void Start()
     {
-        PointsCounter pointsCounter = FindObjectOfType<PointsCounter>();
-        PlayerHealth playerHealth = FindObjectOfType<PlayerHealth>();
-
-        if (pointsCounter == null || playerHealth == null)
-        {
-            
+        if (GameData.Instance == null)
             return;
-        }
 
-        int points = Mathf.RoundToInt(pointsCounter.GetCurrentPoints());
-
-        
-        int lives = Mathf.RoundToInt(playerHealth.GetCurrentHealth());
+        int points = GameData.Instance.points;
+        int lives = GameData.Instance.lives;
 
         string rating = CalculateRating(points, lives);
 
-        ratingText.text = $"OCENA: {rating}";
-        summaryText.text =
-            $"Punkty: {points}\n" +
-            $"Pozosta≥e øycia: {lives}/9";
+        // ustawienie UI
+        if (ratingText != null)
+            ratingText.text = $"OCENA: {rating}";
+
+        if (summaryText != null)
+            summaryText.text = $"Punkty: {points}\nPozosta≥e øycia: {lives}/9";
+
+        SetDescription(rating);
     }
 
-    string CalculateRating(int points, int lives)
+    // Funkcja liczπca ocenÍ
+    private string CalculateRating(int points, int lives)
     {
-        if (points >= pointsForS && lives >= livesForS)
-            return "S";
-
-        if (points >= pointsForA && lives >= livesForA)
-            return "A";
-
-        if (points >= pointsForB && lives >= livesForB)
-            return "B";
-
-        if (points >= pointsForB && lives >= livesForB)
-            return "C";
-
+        if (points >= pointsForS && lives >= livesForS) return "S";
+        if (points >= pointsForA && lives >= livesForA) return "A";
+        if (points >= pointsForB && lives >= livesForB) return "B";
+        if (points >= pointsForC && lives >= livesForC) return "C";
         return "D";
+    }
+
+    // Funkcja ustawiajπca opis w zaleønoúci od oceny
+    private void SetDescription(string rating)
+    {
+        if (descriptionText == null)
+            return;
+
+        switch (rating)
+        {
+            case "S":
+                descriptionText.text = descriptionS;
+                break;
+            case "A":
+                descriptionText.text = descriptionA;
+                break;
+            case "B":
+                descriptionText.text = descriptionB;
+                break;
+            case "C":
+                descriptionText.text = descriptionC;
+                break;
+            default:
+                descriptionText.text = descriptionD;
+                break;
+        }
     }
 }

@@ -6,30 +6,15 @@ public class PointsCounter : MonoBehaviour
     [SerializeField] private float points = 0;
     public TextMeshProUGUI CurrentPointsText;
 
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
     private void Start()
     {
         UpdateText();
     }
 
-    private void Update()
-    {
-        UpdateText();
-    }
-
-    private void UpdateText()
-    {
-        if (CurrentPointsText != null)
-            CurrentPointsText.text = points.ToString();
-    }
-
     public void GetPoints(float newPoints)
     {
         points += newPoints;
+        UpdateText();
     }
 
     public float GetCurrentPoints()
@@ -37,9 +22,21 @@ public class PointsCounter : MonoBehaviour
         return points;
     }
 
-   //dodane do save
-   public void SetPoints(float value)
+    public void SetPoints(float value)
     {
         points = value;
+        UpdateText();
+    }
+
+    public void ResetPoints()
+    {
+        points = 0;
+        UpdateText();
+    }
+
+    private void UpdateText()
+    {
+        if (CurrentPointsText != null)
+            CurrentPointsText.text = points.ToString();
     }
 }

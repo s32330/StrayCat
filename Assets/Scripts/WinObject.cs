@@ -1,21 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class WinObject : MonoBehaviour
 {
-    // Start is called before the first frame update
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.gameObject.CompareTag("Player"))
-        {
+        if (!collision.CompareTag("Player"))
             return;
+
+        PlayerHealth playerHealth = collision.GetComponent<PlayerHealth>();
+        PointsCounter pointsCounter = collision.GetComponent<PointsCounter>();
+
+        if (GameData.Instance != null)
+        {
+            GameData.Instance.points =
+                pointsCounter != null
+                    ? Mathf.RoundToInt(pointsCounter.GetCurrentPoints())
+                    : 0;
+
+            GameData.Instance.lives =
+                playerHealth != null
+                    ? Mathf.RoundToInt(playerHealth.GetCurrentHealth())
+                    : 0;
         }
-        Debug.Log("Koniec");
-      
+
+        Debug.Log("Koniec - zapisano wynik");
+
         SceneManager.LoadScene("Win");
         Destroy(gameObject);
     }
 }
-

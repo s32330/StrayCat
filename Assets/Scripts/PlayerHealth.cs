@@ -1,39 +1,22 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviour
 {
-    [SerializeField] private float maxHealth = 100;
-    [SerializeField] private float health = 100;
+    [SerializeField] private float maxHealth = 9;
+    [SerializeField] private float health = 9;
 
     public TextMeshProUGUI CurrentHealthText;
     private Animator anim;
     private PlayerMovement movement;
     public bool isDead = false;
 
-    private void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
-
     private void Start()
     {
         anim = GetComponent<Animator>();
         movement = GetComponent<PlayerMovement>();
-        isDead = false;
         UpdateText();
-    }
-
-    private void Update()
-    {
-        UpdateText();
-    }
-
-    private void UpdateText()
-    {
-        if (CurrentHealthText != null)
-            CurrentHealthText.text = health.ToString();
     }
 
     public void TakeDamage(float damage)
@@ -42,10 +25,12 @@ public class PlayerHealth : MonoBehaviour
 
         health -= damage;
         health = Mathf.Clamp(health, 0, maxHealth);
+        UpdateText();
 
-        anim.SetTrigger("isHurt");
+        if (anim != null)
+            anim.SetTrigger("isHurt");
 
-        if (health == 0)
+        if (health <= 0)
             Die();
     }
 
@@ -55,24 +40,31 @@ public class PlayerHealth : MonoBehaviour
 
         health += healAmount;
         health = Mathf.Clamp(health, 0, maxHealth);
+        UpdateText();
     }
 
     private void Die()
     {
+        if (isDead) return;
+
         isDead = true;
-        anim.SetBool("isDead", true);
+
+        if (anim != null)
+            anim.SetBool("isDead", true);
 
         if (movement != null)
             movement.enabled = false;
 
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        if (rb != null)
-            rb.velocity = Vector2.zero;
+        // ZAPIS DANYCH DO OCENY
+        if (GameData.Instance != null)
+        {
+            PointsCounter pc = GetComponent<PointsCounter>();
+            GameData.Instance.points = pc != null ? Mathf.RoundToInt(pc.GetCurrentPoints()) : 0;
+            GameData.Instance.lives = 0;
+        }
 
         SceneManager.LoadScene("Lose");
     }
-
-    // do save
 
     public float GetCurrentHealth()
     {
@@ -84,11 +76,34 @@ public class PlayerHealth : MonoBehaviour
         return maxHealth;
     }
 
+    // 🔴 POTRZEBNE DO SAVE / LOAD
     public void SetHealth(float value)
     {
         health = Mathf.Clamp(value, 0, maxHealth);
+        UpdateText();
 
-        if (health == 0 && !isDead)
+        if (health <= 0 && !isDead)
             Die();
+        else if (health > 0)
+            ReviveIfNeeded();
+    }
+
+    private void ReviveIfNeeded()
+    {
+        if (!isDead) return;
+
+        isDead = false;
+
+        if (anim != null)
+            anim.SetBool("isDead", false);
+
+        if (movement != null)
+            movement.enabled = true;
+    }
+
+    private void UpdateText()
+    {
+        if (CurrentHealthText != null)
+            CurrentHealthText.text = health.ToString();
     }
 }
