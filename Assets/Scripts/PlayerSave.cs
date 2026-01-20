@@ -2,7 +2,7 @@
 
 public class PlayerSave : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Odniesienia")]
     public PlayerHealth playerHealth;
     public PointsCounter pointsCounter;
     public Transform playerTransform;
@@ -24,11 +24,11 @@ public class PlayerSave : MonoBehaviour
     {
         SaveData data = new SaveData();
 
-        // 🔹 zapis danych gracza
+        //  zapis danych playera
         data.health = playerHealth.GetCurrentHealth();
         data.points = pointsCounter.GetCurrentPoints();
 
-        // 🔹 zapis pozycji playera
+        //  zapis pozycji playera
         data.position = new float[]
         {
             playerTransform.position.x,
@@ -49,17 +49,17 @@ public class PlayerSave : MonoBehaviour
             return;
         }
 
-        // 🔹 wczytanie danych
+        //  wczytanie danych
         playerHealth.SetHealth(data.health);
         pointsCounter.SetPoints(data.points);
 
-        // 🔹 wczytanie pozycji
+        //  wczytanie pozycji
         playerTransform.position = new Vector3(
             data.position[0],
             data.position[1],
             data.position[2]);
 
-        // 🔹 reset fizyki (BARDZO WAŻNE)
+        //  reset fizyki 
         Rigidbody2D rb = playerTransform.GetComponent<Rigidbody2D>();
         if (rb != null)
         {
