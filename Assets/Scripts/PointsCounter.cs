@@ -1,33 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 public class PointsCounter : MonoBehaviour
 {
-
     [SerializeField] private float points = 0;
-
     public TextMeshProUGUI CurrentPointsText;
 
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Start()
     {
-        CurrentPointsText.text = $"{points}";
-
-
+        UpdateText();
     }
+
     private void Update()
     {
-        if(CurrentPointsText != null)
-        { 
-            CurrentPointsText.text = $"{points}"; }
-
+        UpdateText();
     }
-    public void GetPoints(float newpoints)
-    {
-        points = points + newpoints;
 
+    private void UpdateText()
+    {
+        if (CurrentPointsText != null)
+            CurrentPointsText.text = points.ToString();
+    }
+
+    public void GetPoints(float newPoints)
+    {
+        points += newPoints;
     }
 
     public float GetCurrentPoints()
@@ -35,8 +37,9 @@ public class PointsCounter : MonoBehaviour
         return points;
     }
 
-    private void Awake()
+   //dodane do save
+   public void SetPoints(float value)
     {
-        DontDestroyOnLoad(gameObject);
+        points = value;
     }
 }

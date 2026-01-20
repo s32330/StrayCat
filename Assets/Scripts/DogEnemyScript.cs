@@ -157,5 +157,8 @@ public class DogEnemyScript : MonoBehaviour
         // Wyświetlenie detectionRange w scenie
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

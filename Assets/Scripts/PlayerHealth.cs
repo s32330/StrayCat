@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -11,25 +9,31 @@ public class PlayerHealth : MonoBehaviour
 
     public TextMeshProUGUI CurrentHealthText;
     private Animator anim;
-    public bool isDead = false;
     private PlayerMovement movement;
-   
+    public bool isDead = false;
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Start()
     {
         anim = GetComponent<Animator>();
         movement = GetComponent<PlayerMovement>();
         isDead = false;
-        CurrentHealthText.text = health.ToString();
+        UpdateText();
     }
 
     private void Update()
     {
-        if (CurrentHealthText !=null)
-        {
-            CurrentHealthText.text = health.ToString();
+        UpdateText();
+    }
 
-        }
+    private void UpdateText()
+    {
+        if (CurrentHealthText != null)
+            CurrentHealthText.text = health.ToString();
     }
 
     public void TakeDamage(float damage)
@@ -37,14 +41,12 @@ public class PlayerHealth : MonoBehaviour
         if (isDead) return;
 
         health -= damage;
-        anim.SetTrigger("isHurt");
-
         health = Mathf.Clamp(health, 0, maxHealth);
 
-        if (health == 0 && !isDead)
-        {
+        anim.SetTrigger("isHurt");
+
+        if (health == 0)
             Die();
-        }
     }
 
     public void Heal(float healAmount)
@@ -52,31 +54,25 @@ public class PlayerHealth : MonoBehaviour
         if (isDead) return;
 
         health += healAmount;
-        if (health > maxHealth)
-            health = maxHealth;
+        health = Mathf.Clamp(health, 0, maxHealth);
     }
 
     private void Die()
     {
         isDead = true;
-
         anim.SetBool("isDead", true);
-        if (movement != null)
-        {
-            movement.enabled = false; 
-        }
 
-        // Zatrzymanie fizyki
+        if (movement != null)
+            movement.enabled = false;
+
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         if (rb != null)
-        {
             rb.velocity = Vector2.zero;
 
-        }
-
         SceneManager.LoadScene("Lose");
-
     }
+
+    // do save
 
     public float GetCurrentHealth()
     {
@@ -88,8 +84,11 @@ public class PlayerHealth : MonoBehaviour
         return maxHealth;
     }
 
-    private void Awake()
+    public void SetHealth(float value)
     {
-        DontDestroyOnLoad(gameObject);
-    } 
+        health = Mathf.Clamp(value, 0, maxHealth);
+
+        if (health == 0 && !isDead)
+            Die();
+    }
 }
