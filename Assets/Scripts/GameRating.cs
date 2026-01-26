@@ -21,11 +21,11 @@ public class GameRating : MonoBehaviour
     [Range(1, 9)] public int livesForC = 4;
 
     [Header("Opisy ocen")]
-    public string descriptionS = "Perfekcyjnie! Wszystko idealnie.";
-    public string descriptionA = "Bardzo dobrze! Kilka ma≥ych b≥ÍdÛw.";
-    public string descriptionB = "Dobrze, ale moøesz lepiej.";
+    public string descriptionS = "Jak uda≥o ci siÍ zrobiÊ to tak perfekcyjnie?";
+    public string descriptionA = "åwietnie!...Ale czy sprÛbujesz wspiπÊ siÍ na sam szczyt?";
+    public string descriptionB = "Dobrze, ale moøesz lepiej, prawda?";
     public string descriptionC = "årednio, trzeba popracowaÊ.";
-    public string descriptionD = "èle, sprÛbuj ponownie!";
+    public string descriptionD = "Ty to nazywasz wygranπ? CÛø, przynajmniej øyjÍ...";
 
     private void Start()
     {
@@ -37,7 +37,7 @@ public class GameRating : MonoBehaviour
 
         string rating = CalculateRating(points, lives);
 
-        // ustawienie UI
+        // UI
         if (ratingText != null)
             ratingText.text = $"OCENA: {rating}";
 
@@ -57,7 +57,7 @@ public class GameRating : MonoBehaviour
         return "D";
     }
 
-    // Funkcja ustawiajπca opis w zaleønoúci od oceny
+    // opis w zaleønoúci od oceny
     private void SetDescription(string rating)
     {
         if (descriptionText == null)

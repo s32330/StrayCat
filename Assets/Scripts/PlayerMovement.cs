@@ -1,64 +1,75 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-     public float moveSpeed = 500f;
+    [Header("Movement Settings")]
+    public float moveSpeed = 5f;     
     public float jumpForce = 300f;
 
     [HideInInspector] public float moveInput = 0f;
     [HideInInspector] public bool isJump = false;
 
-    //komponenty
+    [Header("Components")]
     public Rigidbody2D rb;
     public SpriteRenderer sprite;
     public Animator anim;
     public GroundChecker groundChecker;
-    public PlayerHealth health;  
+    public PlayerHealth health;
 
     private void Start()
     {
+        
         if (rb == null) rb = GetComponent<Rigidbody2D>();
         if (sprite == null) sprite = GetComponent<SpriteRenderer>();
         if (anim == null) anim = GetComponent<Animator>();
+        if (health == null) health = GetComponent<PlayerHealth>();
     }
 
     private void Update()
     {
-        // jeœli gracz martwy – blokujemy ruch i animacje
+        // Blokada ruchu po Å›mierci
         if (health != null && health.isDead)
         {
-            anim.SetFloat("IsMove", -1); // zatrzymanie animacji ruchu
+            if (anim != null) anim.SetFloat("IsMove", -1);
             return;
         }
 
-        // Animacje
-        anim.SetFloat("verticalVelocity", rb.velocity.y);
-        anim.SetBool("isGrounded", groundChecker.isGrounded);
+        // Odczyt ruchu gracza
+        moveInput = Input.GetAxis("Horizontal");
 
         // Skok
-        if (Input.GetKeyDown(KeyCode.Space) && groundChecker.isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && groundChecker != null && groundChecker.isGrounded)
             isJump = true;
 
-        // Ruch poziomy
-        moveInput = Input.GetAxis("Horizontal");
-        anim.SetFloat("IsMove", moveInput != 0 ? 1 : -1);
+        // Animacje
+        if (anim != null)
+        {
+            anim.SetFloat("verticalVelocity", rb.velocity.y);
+
+            if (groundChecker != null)
+                anim.SetBool("isGrounded", groundChecker.isGrounded);
+
+            anim.SetFloat("IsMove", moveInput != 0 ? 1 : -1);
+        }
     }
 
     private void FixedUpdate()
     {
-        if (health != null && health.isDead) return; // blokada ruchu po œmierci
+        if (health != null && health.isDead) return;
 
-        // Obrót sprite w zale¿noœci od kierunku ruchu
-        if (moveInput > 0f)
-            sprite.flipX = false;
-        else if (moveInput < 0f)
-            sprite.flipX = true;
+        // ObrÃ³t sprite w zaleÅ¼noÅ›ci od kierunku ruchu
+        if (sprite != null)
+        {
+            if (moveInput > 0f) sprite.flipX = false;
+            else if (moveInput < 0f) sprite.flipX = true;
+        }
 
-        // Ruch
-        rb.velocity = new Vector2(moveInput * moveSpeed * Time.deltaTime, rb.velocity.y);
+        // Move
+        if (rb != null)
+            rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
 
         // Skok
-        if (isJump && groundChecker.isGrounded)
+        if (isJump && groundChecker != null && groundChecker.isGrounded)
         {
             rb.AddForce(Vector2.up * jumpForce);
             isJump = false;

@@ -89,7 +89,7 @@ public class DogEnemyScript : MonoBehaviour
         transform.position = new Vector2(newX, startY);
         FaceDirection(direction);
 
-        // Animacja ruchu zależna od faktycznego ruchu
+        
         anim.SetFloat("Move", Mathf.Abs(direction) > 0.001f ? 1f : 0f);
 
         if (Mathf.Abs(transform.position.x - targetPoint.position.x) < 0.05f)
@@ -143,6 +143,8 @@ public class DogEnemyScript : MonoBehaviour
         {
             PlayerHealth ph = hit.GetComponent<PlayerHealth>();
             if (ph != null) ph.TakeDamage(damage);
+            AudioManager.Instance.PlaySFX("DogAttack");
+            AudioManager.Instance.PlaySFX("HurtMeow");
         }
     }
 

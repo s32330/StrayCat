@@ -25,7 +25,7 @@ public class WinObject : MonoBehaviour
         }
 
         Debug.Log("Koniec - zapisano wynik");
-
+        AudioManager.Instance.PlaySFX("Win");
         SceneManager.LoadScene("Win");
         Destroy(gameObject);
     }

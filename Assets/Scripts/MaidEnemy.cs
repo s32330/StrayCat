@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class Enemy1 : MonoBehaviour
+public class MaidEnemy : MonoBehaviour
 {
     //Patrol
     public Transform LeftPoint;
@@ -8,7 +8,7 @@ public class Enemy1 : MonoBehaviour
 
     public float speed = 2f; // normalna prędkość patrolu
     public float chaseSpeed = 4f; // prędkość podczas podążania za graczem
-     public float detectionRange = 5f; // zasięg wykrycia gracza
+    public float detectionRange = 5f; // zasięg wykrycia gracza
 
     //Komponenty
     public Transform player;
@@ -22,10 +22,10 @@ public class Enemy1 : MonoBehaviour
     public float attackHitRange = 0.5f;
     public float attackRange = 2f;
     public float attackCooldown = 1f;
+    public int damage = 1; 
     private float nextAttackTime = 0f;
 
     private float startY;
-    
 
     void Start()
     {
@@ -144,7 +144,8 @@ public class Enemy1 : MonoBehaviour
         if (hit != null)
         {
             PlayerHealth ph = hit.GetComponent<PlayerHealth>();
-            if (ph != null) ph.TakeDamage(40);
+            if (ph != null) ph.TakeDamage(damage);
+            AudioManager.Instance.PlaySFX("HurtMeow");
         }
     }
 
@@ -159,5 +160,8 @@ public class Enemy1 : MonoBehaviour
         // Wyświetlenie detectionRange w scenie
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

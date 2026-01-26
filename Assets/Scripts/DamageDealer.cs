@@ -1,26 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageDealer : MonoBehaviour
 {
-    public float damage = 40;
+    public float damage = 1;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.gameObject.CompareTag("Player"))
-        {
+        if (!collision.CompareTag("Player"))
             return;
-        }
 
-        
-        PlayerHealth health = collision.gameObject.GetComponent<PlayerHealth>();
+        PlayerHealth health = collision.GetComponent<PlayerHealth>();
         if (health == null)
-        {
             return;
-        }
-
+      
         health.TakeDamage(damage);
+        AudioManager.Instance.PlaySFX("HurtMeow");
     }
-
-    
-    }
+}
